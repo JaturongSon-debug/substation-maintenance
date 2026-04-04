@@ -2,107 +2,92 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>ผอส. - แผนกอุปกรณ์เชื่อมต่อโครงข่ายสื่อสาร</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>ผสม. - Dashboard & Upload</title>
+    <style>
+        body { font-family: sans-serif; background: #f8f9fa; padding: 20px; }
+        .box { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button { background: #632E91; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
 </head>
 <body>
+    <a href="index.html" style="text-decoration: none; color: #632E91;">&larr; กลับหน้าหลัก</a>
+    <h2 style="color: #632E91;">แผนก ผอส. (อุปกรณ์เชื่อมต่อโครงข่ายสื่อสาร)</h2>
 
-<nav>
-    <a href="index.html" class="logo">PEA กสฟ.น2</a>
-    <ul>
-        <li><a href="index.html">หน้าหลัก</a></li>
-        <li><a href="dept1.html">ผสม.</a></li>
-        <li><a href="dept2.html">ผรผ.</a></li>
-        <li><a href="dept3.html">ผปค.</a></li>
-        <li><a href="dept4.html">ผอส.</a></li>
-    </ul>
-</nav>
+    <div class="box">
+        <h3>📊 สรุปผลการดำเนินงาน (Dashboard)</h3>
+        <iframe src="https://lookerstudio.google.com/embed/reporting/..." width="100%" height="400" style="border:none;"></iframe>
+    </div>
 
-<div class="container">
-    <section class="dashboard-section">
-        <h2><i class="fas fa-chart-pie"></i> Executive Summary Dashboard (ผปค.)</h2>
-        <div class="dashboard-box">
-            <iframe src="URL_DASHBOARD_ผปค_ของคุณ" style="width:100%; height:500px; border:none; border-radius:10px; background:#fff;"></iframe>
-        </div>
-    </section>
+    <div class="box">
+        <h3>📤 อัปโหลดข้อมูลงานใหม่ (PDF, Excel ไม่เกิน 10MB)</h3>
+        <input type="file" id="fileInput" accept=".pdf, .xls, .xlsx">
+        <button onclick="uploadFile()">ส่งไฟล์เข้าระบบ</button>
+        <p id="statusMsg" style="color: #d35400; font-weight: bold;"></p>
+    </div>
 
-    <section class="upload-section" style="margin-top: 40px;">
-        <div class="dept-card" style="text-align: left; border-bottom: 5px solid #27ae60;">
-            <h3><i class="fas fa-cloud-upload-alt" style="color:#27ae60;"></i> อัปโหลดรายงาน/ข้อมูลใหม่</h3>
-            <input type="file" id="fileInput" style="display:block; margin: 15px 0;">
-            <button onclick="uploadFile()" id="btnUpload" style="background:#27ae60; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">
-                <i class="fas fa-upload"></i> ส่งไฟล์เข้า Drive
-            </button>
-            <p id="uploadStatus" style="margin-top:10px; font-weight:bold;"></p>
-        </div>
-    </section>
+    <div class="box">
+        <h3>📁 ไฟล์เอกสารในคลัง</h3>
+        <ul id="fileList"><li>กำลังโหลดข้อมูล...</li></ul>
+    </div>
 
-    <section class="files-section" style="margin-top: 40px;">
-        <h2><i class="fas fa-file-invoice"></i> คลังเอกสารล่าสุดใน Google Drive</h2>
-        <div id="fileList" class="grid" style="margin-top: 20px;">
-            <p>🔄 กำลังโหลดข้อมูลไฟล์...</p>
-        </div>
-    </section>
-</div>
+    <script>
+        // ใช้ URL Web App ของคุณ
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwALYtD8OwS4-EAdKzEI1nXXw8uFz93JC_5GaaXfcCV5D9M6MLDMmO8pji5XVEawW_p/exec";
+        
+        // *** สำคัญ: ถ้าทำหน้าแผนกอื่น ให้เปลี่ยนคำว่า dept1 เป็น dept2, dept3 หรือ dept4 ***
+        const DEPT_ID = "dept4"; 
 
-<script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwALYtD8OwS4-EAdKzEI1nXXw8uFz93JC_5GaaXfcCV5D9M6MLDMmO8pji5XVEawW_p/exec"; // URL ที่ได้จากการ Deploy
-    const DEPT_ID = "dept4"; // แก้ตามแผนก: dept1, dept2, dept3, dept4
+        async function loadFiles() {
+            try {
+                const res = await fetch(`${APPS_SCRIPT_URL}?dept=${DEPT_ID}`);
+                const data = await res.json();
+                const list = document.getElementById("fileList");
+                list.innerHTML = "";
+                if(data.status === "success") {
+                    data.data.forEach(f => {
+                        list.innerHTML += `<li><a href="${f.url}" target="_blank">${f.name}</a> (อัปเดต: ${f.date})</li>`;
+                    });
+                }
+            } catch(e) { document.getElementById("fileList").innerHTML = "โหลดข้อมูลไม่สำเร็จ"; }
+        }
 
-    // ฟังก์ชันโหลดรายชื่อไฟล์
-    async function loadFileList() {
-        try {
-            const res = await fetch(`${APPS_SCRIPT_URL}?dept=${DEPT_ID}`);
-            const result = await res.json();
-            const container = document.getElementById('fileList');
-            container.innerHTML = "";
+        async function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            const statusMsg = document.getElementById("statusMsg");
+            const file = fileInput.files[0];
             
-            if(result.status === "success") {
-                result.data.forEach(file => {
-                    container.innerHTML += `
-                        <div class="dept-card" style="padding:15px; text-align:left;">
-                            <i class="fas fa-file-pdf" style="color:#e74c3c;"></i>
-                            <h4 style="font-size:14px; margin:5px 0;">${file.name}</h4>
-                            <small>วันที่: ${file.date}</small><br>
-                            <a href="${file.url}" target="_blank" style="color:#632E91; font-size:12px;">เปิดดูไฟล์</a>
-                        </div>
-                    `;
-                });
+            if(!file) return alert("กรุณาเลือกไฟล์!");
+            
+            // ตรวจสอบขนาดไฟล์ไม่เกิน 10MB (10 * 1024 * 1024 bytes)
+            if(file.size > 10485760) {
+                statusMsg.innerText = "❌ ไฟล์ขนาดใหญ่เกิน 10MB กรุณาเลือกไฟล์ใหม่";
+                statusMsg.style.color = "red";
+                return;
             }
-        } catch (e) { console.error(e); }
-    }
 
-    // ฟังก์ชันอัปโหลดไฟล์
-    async function uploadFile() {
-        const fileInput = document.getElementById('fileInput');
-        const status = document.getElementById('uploadStatus');
-        if(!fileInput.files[0]) return alert("กรุณาเลือกไฟล์!");
+            statusMsg.innerText = "⏳ กำลังประมวลผลและอัปโหลด... ห้ามปิดหน้าจอ";
+            statusMsg.style.color = "#d35400";
 
-        const file = fileInput.files[0];
-        status.innerText = "⏳ กำลังส่งไฟล์...";
-        status.style.color = "#d35400";
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = async () => {
-            const payload = {
-                fileData: reader.result,
-                fileName: file.name,
-                mimeType: file.type,
-                dept: DEPT_ID
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const payload = { fileData: reader.result, fileName: file.name, mimeType: file.type, dept: DEPT_ID };
+                try {
+                    const res = await fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+                    const result = await res.json();
+                    if(result.status === "success") {
+                        statusMsg.innerText = "✅ บันทึกไฟล์และอัปเดตฐานข้อมูลสำเร็จ!";
+                        statusMsg.style.color = "green";
+                        fileInput.value = "";
+                        loadFiles(); // รีเฟรชรายการไฟล์
+                    } else {
+                        statusMsg.innerText = "❌ Error: " + result.message;
+                    }
+                } catch(e) { statusMsg.innerText = "❌ การเชื่อมต่อล้มเหลว"; }
             };
-            const res = await fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-            const result = await res.json();
-            if(result.status === "success") {
-                status.innerText = "✅ อัปโหลดสำเร็จ!";
-                status.style.color = "#27ae60";
-                loadFileList(); // รีโหลดรายการไฟล์
-            }
-        };
-    }
+        }
 
-    window.onload = loadFileList;
-</script>
+        window.onload = loadFiles;
+    </script>
 </body>
 </html>
