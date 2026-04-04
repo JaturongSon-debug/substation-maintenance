@@ -1,1 +1,90 @@
+/* Google Font: Sarabun */
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
 
+:root {
+    --pea-purple: #632E91;
+    --pea-gold: #f1c40f;
+    --dark: #2c3e50;
+    --light: #ecf0f1;
+    --white: #ffffff;
+    --shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Sarabun', sans-serif;
+}
+
+body { background-color: #f8f9fa; color: var(--dark); line-height: 1.6; }
+
+/* Navigation */
+nav {
+    background: var(--pea-purple);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0; z-index: 1000;
+    box-shadow: var(--shadow);
+}
+
+nav .logo { color: var(--white); font-weight: bold; font-size: 1.5rem; text-decoration: none; }
+
+nav ul { display: flex; list-style: none; }
+
+nav ul li a {
+    color: var(--white);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: 0.3s;
+}
+
+nav ul li a:hover { color: var(--pea-gold); }
+
+/* Header Section */
+.header-hero {
+    background: linear-gradient(rgba(99, 46, 145, 0.8), rgba(99, 46, 145, 0.8)), 
+                url('https://images.unsplash.com/photo-1558444479-c8a510526a8e?auto=format&fit=crop&w=1200') center/cover;
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+}
+
+/* Dashboard Grid */
+.container { max-width: 1200px; margin: auto; padding: 40px 20px; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.dept-card {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: 0.3s;
+    text-decoration: none;
+    color: var(--dark);
+    border-bottom: 5px solid var(--pea-purple);
+}
+
+.dept-card:hover { transform: translateY(-10px); }
+
+.dept-card i { font-size: 3rem; color: var(--pea-purple); margin-bottom: 15px; }
+
+/* Dashboard Frame */
+.dashboard-box {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    margin-top: 30px;
+}
+
+iframe { width: 100%; height: 600px; border: none; border-radius: 10px; }
+
+footer { background: var(--dark); color: white; text-align: center; padding: 20px; margin-top: 40px; }
