@@ -20,10 +20,49 @@
 </nav>
 
 <div class="container">
-    <h2><i class="fas fa-chart-line"></i> Dashboard สรุปผลการดำเนินงาน ผปค.</h2>
-    <div class="dashboard-box">
-        <iframe src="https://lookerstudio.google.com/embed/reporting/YOUR_REPORT_ID"></iframe>
+    <h2><i class="fas fa-folder-open"></i> คลังข้อมูลและไฟล์เอกสาร (ดึงจาก Google Drive อัตโนมัติ)</h2>
+    
+    <div id="file-list" class="grid" style="margin-top: 20px;">
+        <p id="loading-text" style="text-align:center; width:100%;">⏳ กำลังดึงข้อมูลไฟล์จาก Google Drive...</p>
     </div>
+</div>
+
+<script>
+    // นำ URL ของเว็บแอป ที่ได้จากขั้นตอนที่ 1 มาใส่ในเครื่องหมายคำพูดด้านล่าง
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAdd-VDCoKgY6zyBQ3S2pigi0pLeiNgG6J5vDILMXoJ0kWsAFTzXpPw-Sjab0hEB7z/exec";
+    
+    // กำหนดแผนกที่ต้องการดึงข้อมูลให้ตรงกับไฟล์นี้ (dept1 = ผสม., dept2 = ผรผ., ฯลฯ)
+    const currentDept = "dept4"; 
+
+    // เริ่มทำการดึงข้อมูล
+    fetch(APPS_SCRIPT_URL + "?dept=" + currentDept)
+        .then(response => response.json())
+        .then(result => {
+            const container = document.getElementById('file-list');
+            container.innerHTML = ""; // เคลียร์ข้อความโหลด
+
+            if (result.status === "success" && result.data.length > 0) {
+                // สร้างการ์ดแสดงไฟล์แต่ละอัน
+                result.data.forEach(file => {
+                    container.innerHTML += `
+                        <a href="${file.url}" target="_blank" class="dept-card" style="border-bottom-color: #4285F4; text-align: left;">
+                            <i class="fas fa-file-alt" style="color: #4285F4; font-size: 2rem; margin-bottom: 10px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 5px; color: #333;">${file.name}</h4>
+                            <p style="font-size: 12px; color: #777;">อัปเดต: ${file.date}</p>
+                        </a>
+                    `;
+                });
+            } else if (result.data && result.data.length === 0) {
+                container.innerHTML = `<p style="text-align:center; width:100%; color:#555;">ไม่มีไฟล์ในโฟลเดอร์นี้</p>`;
+            } else {
+                container.innerHTML = `<p style="text-align:center; width:100%; color:red;">เกิดข้อผิดพลาด: ${result.message}</p>`;
+            }
+        })
+        .catch(error => {
+            document.getElementById('file-list').innerHTML = `<p style="text-align:center; width:100%; color:red;">ไม่สามารถเชื่อมต่อกับ Google Drive ได้</p>`;
+            console.error("Error fetching data:", error);
+        });
+</script>
 
     <h2 style="margin-top: 40px;"><i class="fab fa-google-drive"></i> คลังข้อมูลและไฟล์เอกสาร (Google Drive)</h2>
     <div class="grid" style="margin-top: 20px;">
