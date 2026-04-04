@@ -1,82 +1,52 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <title>ผอส. - อุปกรณ์เชื่อมต่อโครงข่ายสื่อสาร</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-
-<nav>
-    <a href="index.html" class="logo">PEA กสฟ.น2</a>
-    <ul>
-        <li><a href="index.html">หน้าหลัก</a></li>
-        <li><a href="dept1.html">ผสม.</a></li>
-        <li><a href="dept2.html">ผรผ.</a></li>
-        <li><a href="dept3.html">ผปค.</a></li>
-        <li><a href="dept4.html">ผอส.</a></li>
-    </ul>
-</nav>
-
-<div class="container">
-    <h2><i class="fas fa-folder-open"></i> คลังข้อมูลและไฟล์เอกสาร (ดึงจาก Google Drive อัตโนมัติ)</h2>
-    
-    <div id="file-list" class="grid" style="margin-top: 20px;">
-        <p id="loading-text" style="text-align:center; width:100%;">⏳ กำลังดึงข้อมูลไฟล์จาก Google Drive...</p>
-    </div>
+<div class="dashboard-box" style="margin-top: 20px;">
+    <h3><i class="fas fa-upload"></i> อัปโหลดไฟล์เข้าคลัง ผอส.</h3>
+    <input type="file" id="fileInput" style="margin: 15px 0;">
+    <button onclick="uploadFile()" style="background: #632E91; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        อัปโหลดไฟล์
+    </button>
+    <p id="upload-status" style="margin-top: 10px; color: #d35400;"></p>
 </div>
 
 <script>
-    // นำ URL ของเว็บแอป ที่ได้จากขั้นตอนที่ 1 มาใส่ในเครื่องหมายคำพูดด้านล่าง
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwALYtD8OwS4-EAdKzEI1nXXw8uFz93JC_5GaaXfcCV5D9M6MLDMmO8pji5XVEawW_p/exec";
-    
-    // กำหนดแผนกที่ต้องการดึงข้อมูลให้ตรงกับไฟล์นี้ (dept1 = ผสม., dept2 = ผรผ., ฯลฯ)
-    const currentDept = "dept4"; 
+    async function uploadFile() {
+        const fileInput = document.getElementById('fileInput');
+        const statusText = document.getElementById('upload-status');
+        
+        if (fileInput.files.length === 0) {
+            statusText.innerText = "กรุณาเลือกไฟล์ก่อนอัปโหลด!";
+            return;
+        }
 
-    // เริ่มทำการดึงข้อมูล
-    fetch(APPS_SCRIPT_URL + "?dept=" + currentDept)
-        .then(response => response.json())
-        .then(result => {
-            const container = document.getElementById('file-list');
-            container.innerHTML = ""; // เคลียร์ข้อความโหลด
+        const file = fileInput.files[0];
+        statusText.innerText = "กำลังอัปโหลด... โปรดรอสักครู่";
 
-            if (result.status === "success" && result.data.length > 0) {
-                // สร้างการ์ดแสดงไฟล์แต่ละอัน
-                result.data.forEach(file => {
-                    container.innerHTML += `
-                        <a href="${file.url}" target="_blank" class="dept-card" style="border-bottom-color: #4285F4; text-align: left;">
-                            <i class="fas fa-file-alt" style="color: #4285F4; font-size: 2rem; margin-bottom: 10px;"></i>
-                            <h4 style="font-size: 16px; margin-bottom: 5px; color: #333;">${file.name}</h4>
-                            <p style="font-size: 12px; color: #777;">อัปเดต: ${file.date}</p>
-                        </a>
-                    `;
+        const reader = new FileReader();
+        reader.onload = async function() {
+            const payload = {
+                fileData: reader.result,
+                fileName: file.name,
+                mimeType: file.type,
+                dept: "dept4" // เปลี่ยนเป็น dept2, dept3 ตามหน้าของแผนกนั้นๆ
+            };
+
+            try {
+                // อย่าลืมเปลี่ยน APPS_SCRIPT_URL เป็น URL ของคุณ
+                const response = await fetch(APPS_SCRIPT_URL, {"https://script.google.com/macros/s/AKfycbwALYtD8OwS4-EAdKzEI1nXXw8uFz93JC_5GaaXfcCV5D9M6MLDMmO8pji5XVEawW_p/exec"
+                    method: "POST",
+                    body: JSON.stringify(payload)
                 });
-            } else if (result.data && result.data.length === 0) {
-                container.innerHTML = `<p style="text-align:center; width:100%; color:#555;">ไม่มีไฟล์ในโฟลเดอร์นี้</p>`;
-            } else {
-                container.innerHTML = `<p style="text-align:center; width:100%; color:red;">เกิดข้อผิดพลาด: ${result.message}</p>`;
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    statusText.innerText = "✅ อัปโหลดไฟล์สำเร็จแล้ว! (รีเฟรชหน้าเว็บเพื่อดูไฟล์)";
+                    fileInput.value = ""; // เคลียร์ช่องเลือกไฟล์
+                } else {
+                    statusText.innerText = "❌ เกิดข้อผิดพลาด: " + result.message;
+                }
+            } catch (error) {
+                statusText.innerText = "❌ ไม่สามารถส่งข้อมูลได้";
             }
-        })
-        .catch(error => {
-            document.getElementById('file-list').innerHTML = `<p style="text-align:center; width:100%; color:red;">ไม่สามารถเชื่อมต่อกับ Google Drive ได้</p>`;
-            console.error("Error fetching data:", error);
-        });
+        };
+        reader.readAsDataURL(file); // แปลงไฟล์เป็น Base64 ส่งไปให้ Google Script
+    }
 </script>
-
-    <h2 style="margin-top: 40px;"><i class="fab fa-google-drive"></i> คลังข้อมูลและไฟล์เอกสาร (Google Drive)</h2>
-    <div class="grid" style="margin-top: 20px;">
-        <a href="YOUR_GOOGLE_DRIVE_FOLDER_URL" target="_blank" class="dept-card" style="border-bottom-color: #4285F4;">
-            <i class="fas fa-folder-open" style="color: #4285F4;"></i>
-            <h3>เข้าสู่ Google Drive</h3>
-            <p>อัพโหลด/ดาวน์โหลดไฟล์แผนก ผอส.</p>
-        </a>
-    </div>
-</div>
-
-<footer>
-    <p>© 2026 กองบำรุงรักษาสถานีไฟฟ้า กสฟ.น2</p>
-</footer>
-
-</body>
-</html>
