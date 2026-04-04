@@ -2,56 +2,25 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>กสฟ.น2 - Substation Maintenance</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>กสฟ.น2 - หน้าหลัก</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; margin: 0; padding: 0; }
+        header { background: #632E91; color: white; padding: 20px; text-align: center; }
+        .grid { display: flex; justify-content: center; gap: 20px; margin-top: 50px; flex-wrap: wrap; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 200px; text-align: center; text-decoration: none; color: #333; border-bottom: 4px solid #f1c40f; }
+        .card:hover { transform: translateY(-5px); }
+    </style>
 </head>
 <body>
-
-<nav>
-    <a href="index.html" class="logo">PEA กสฟ.น2</a>
-    <ul>
-        <li><a href="index.html">หน้าหลัก</a></li>
-        <li><a href="dept1.html">ผสม.</a></li>
-        <li><a href="dept2.html">ผรผ.</a></li>
-        <li><a href="dept3.html">ผปค.</a></li>
-        <li><a href="dept4.html">ผอส.</a></li>
-    </ul>
-</nav>
-
-<header class="header-hero">
-    <h1>กองบำรุงรักษาสถานีไฟฟ้า (กสฟ.น2)</h1>
-    <p>Substation Maintenance Division 2</p>
-</header>
-
-<div class="container">
+    <header>
+        <h1>กองบำรุงรักษาสถานีไฟฟ้า (กสฟ.น2)</h1>
+        <p>เลือกระบบงานแต่ละแผนก</p>
+    </header>
     <div class="grid">
-        <a href="dept1.html" class="dept-card">
-            <i class="fas fa-bolt"></i>
-            <h3>ผสม.</h3>
-            <p>สวิตซ์เกียร์และหม้อแปลงไฟฟ้ากำลัง</p>
-        </a>
-        <a href="dept2.html" class="dept-card">
-            <i class="fas fa-engine"></i>
-            <h3>ผรผ.</h3>
-            <p>ระบบผลิตไฟฟ้า</p>
-        </a>
-        <a href="dept3.html" class="dept-card">
-            <i class="fas fa-user-shield"></i>
-            <h3>ผปค.</h3>
-            <p>ระบบป้องกันและควบคุมสถานีไฟฟ้า</p>
-        </a>
-        <a href="dept4.html" class="dept-card">
-            <i class="fas fa-network-wired"></i>
-            <h3>ผอส.</h3>
-            <p>อุปกรณ์เชื่อมต่อโครงข่ายสื่อสาร</p>
-        </a>
+        <a href="dept1.html" class="card"><h3>ผสม.</h3><p>สวิตซ์เกียร์ฯ</p></a>
+        <a href="dept2.html" class="card"><h3>ผรผ.</h3><p>ระบบผลิตไฟฟ้า</p></a>
+        <a href="dept3.html" class="card"><h3>ผปค.</h3><p>ระบบป้องกันฯ</p></a>
+        <a href="dept4.html" class="card"><h3>ผอส.</h3><p>ระบบสื่อสารฯ</p></a>
     </div>
-</div>
-
-<footer>
-    <p>© 2026 กองบำรุงรักษาสถานีไฟฟ้า กสฟ.น2 | การไฟฟ้าส่วนภูมิภาค</p>
-</footer>
-
 </body>
 </html>
