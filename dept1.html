@@ -15,7 +15,56 @@
 
     <div class="box">
         <h3>📊 สรุปผลการดำเนินงาน (Dashboard)</h3>
-        <iframe src="https://lookerstudio.google.com/datasources/17024e43-0c76-42bf-ad9e-31dc05c1a1f7" width="100%" height="400" style="border:none;"></iframe>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; justify-content: center;">
+    
+    <div style="width: 100%; max-width: 350px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center;">
+        <h4 style="color: #632E91; margin-bottom: 15px;">สถานะงานบำรุงรักษา</h4>
+        <canvas id="statusChart"></canvas>
+    </div>
+
+    <div style="width: 100%; max-width: 500px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center;">
+        <h4 style="color: #632E91; margin-bottom: 15px;">สถิติงานที่ทำสำเร็จ (รายเดือน)</h4>
+        <canvas id="monthChart"></canvas>
+    </div>
+</div>
+<script>
+    // ข้อมูลสำหรับกราฟวงกลม (แก้ตัวเลขตรง data ได้เลย)
+    const statusData = {
+        labels: ['สำเร็จ', 'กำลังดำเนินการ', 'รออะไหล่'],
+        datasets: [{
+            data: [45, 12, 5], // ตัวเลขจำนวนงาน
+            backgroundColor: ['#27ae60', '#f1c40f', '#e74c3c'], // สี: เขียว, เหลือง, แดง
+            borderWidth: 1
+        }]
+    };
+    const configStatus = {
+        type: 'doughnut',
+        data: statusData,
+        options: { responsive: true }
+    };
+    new Chart(document.getElementById('statusChart'), configStatus);
+    // ข้อมูลสำหรับกราฟแท่ง (แก้ตัวเลขตรง data ได้เลย)
+    const monthData = {
+        labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.'],
+        datasets: [{
+            label: 'จำนวนงานที่เสร็จ (งาน)',
+            data: [8, 12, 15, 7, 10, 14], // ตัวเลขงานแต่ละเดือน
+            backgroundColor: '#632E91', // สีม่วง PEA
+            borderRadius: 5
+        }]
+    };
+    const configMonth = {
+        type: 'bar',
+        data: monthData,
+        options: { 
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+        }
+    };
+    new Chart(document.getElementById('monthChart'), configMonth);
+</script>
     </div>
 
     <div class="box">
@@ -24,19 +73,15 @@
         <button onclick="uploadFile()">ส่งไฟล์เข้าระบบ</button>
         <p id="statusMsg" style="color: #d35400; font-weight: bold;"></p>
     </div>
-
     <div class="box">
         <h3>📁 ไฟล์เอกสารในคลัง</h3>
         <ul id="fileList"><li>กำลังโหลดข้อมูล...</li></ul>
     </div>
-
     <script>
         // ใช้ URL Web App ของคุณ
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUp_fUzlBySWv8siYEuYV_9Aa6VGEBwLgLvqqYNyoojaFONg4D5JvUODOx93zugri3/exec";
-        
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUp_fUzlBySWv8siYEuYV_9Aa6VGEBwLgLvqqYNyoojaFONg4D5JvUODOx93zugri3/exec";   
         // *** สำคัญ: ถ้าทำหน้าแผนกอื่น ให้เปลี่ยนคำว่า dept1 เป็น dept2, dept3 หรือ dept4 ***
         const DEPT_ID = "dept1"; 
-
         async function loadFiles() {
             try {
                 const res = await fetch(`${APPS_SCRIPT_URL}?dept=${DEPT_ID}`);
